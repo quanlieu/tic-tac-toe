@@ -45,10 +45,12 @@ function reInit() {
 }
 
 function handleCellClick(e) {
-  if (ended) {
+  // Do nothing if the game has ended or played on an occupied cell
+  const index = e.currentTarget.dataset.index
+  if (ended || board[index]) {
     return;
   }
-  place(e.currentTarget.dataset.index);
+  place(index);
 }
 
 function place(index) {
