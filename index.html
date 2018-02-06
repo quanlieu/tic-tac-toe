@@ -10,7 +10,13 @@
 <body>
   <div class="title-wrapper">
     <div class="title">Tic tac teo</div>
-    <button id="ok">Reset</button>
+    <input type="radio" name="mode" value="vs" id="vs" checked>
+    <label for="vs">Human vs Human</label>
+    <input type="radio" name="mode" value="human-first" id="hf">
+    <label for="hf">Human vs Computer</label>
+    <input type="radio" name="mode" value="computer-first" id="cf">
+    <label for="cf">Computer vs Human</label>
+    <button id="ok">OK</button>
   </div>
   <div class="board">
     <div class="row">

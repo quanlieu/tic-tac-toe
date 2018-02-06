@@ -3,6 +3,7 @@
 // 0 === empty cell, x === player x, o === player o
 var board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 var turn = 'x'; // Player to place: x always first
+var computer; // Computer is player x or y, default computer doesn't play
 var totalMove = 0; // Total moves have been place so far, max 9;
 var ended = false;
 var winner;
@@ -20,6 +21,7 @@ function init() {
 }
 
 function reInit() {
+  // Re initiate value
   board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
   turn = 'x';
   totalMove = 0;
@@ -30,6 +32,15 @@ function reInit() {
 
   for (let i = 0; i < 9; i++) {
     cells[i].className = 'cell';
+  }
+
+  // Check if play mode is set to computer
+  // cf === computer first, hf === human first
+  if (document.getElementById('cf').checked) {
+    computer = 'x';
+    calculateMove();
+  } else if (document.getElementById('hf').checked) {
+    computer = 'o';
   }
 }
 
@@ -48,6 +59,11 @@ function place(index) {
     turn = turn === 'x' ? 'o' : 'x';
   }
   updateView();
+
+  // Handle computer turn
+  if (turn === computer) {
+    calculateMove();
+  }
 }
 
 function updateGameStatus() {
@@ -104,3 +120,20 @@ function shallowEqual(array, value) {
 window.onload = init();
 
 // AI section
+function calculateMove() {
+  if (ended) {
+    return;
+  }
+  
+  for (let i = 0; i < 9; i++) {
+    if (!board[i]) {
+      place(i);
+      return;
+    }
+  }
+}
+
+function firstComputerMove() {
+  // Computer go first, always take the corner
+  place(0);
+}
