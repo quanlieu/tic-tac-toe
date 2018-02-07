@@ -14,6 +14,13 @@
   margin-right: 1em;
 }
 
+.desc {
+  font-size: 1.5em;
+  font-family: Arial, Helvetica, sans-serif;
+  color: dimgray;
+  margin: 0.2em 0 0.5em;
+}
+
 #turn {
   font-size: 2em;
   font-family: Arial, Helvetica, sans-serif;
@@ -49,9 +56,9 @@
 }
 
 .x {
-  background: url('cross.png') no-repeat center center;
+  background: url('./cross.png') no-repeat center center;
 }
 
 .o {
-  background: url('circle.png') no-repeat center center;
+  background: url('./circle.png') no-repeat center center;
 }

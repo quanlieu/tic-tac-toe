@@ -10,13 +10,14 @@
 <body>
   <div class="title-wrapper">
     <div class="title">Tic tac toe</div>
+    <div class="desc">Select a game mode and hit "Start"</div>
     <input type="radio" name="mode" value="vs" id="vs" checked>
     <label for="vs">Human vs Human</label>
     <input type="radio" name="mode" value="human-first" id="hf">
     <label for="hf">Human vs AI</label>
     <input type="radio" name="mode" value="ai-first" id="cf">
     <label for="cf">AI vs Human</label>
-    <button id="ok">OK</button>
+    <button id="ok">Start</button>
   </div>
   <div class="board">
     <div class="row">
@@ -39,6 +40,12 @@
     </div>
   </div>
   <div id="turn">X turn</div>
+  <div>Note:</div>
+  <ul>
+    <li>Tic-tac-toe is a game for two players, X and O, who take turns marking the spaces in a 3×3 grid.</li>
+    <li>The player who succeeds in placing three of their marks in a horizontal, vertical, or diagonal row wins the game.</li>
+    <li>Best play from both parties leads to a draw.</li>
+  </ul>
   <script src="tic-tac-toe.js"></script>
 </body>
 </html>

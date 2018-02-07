@@ -114,14 +114,14 @@ function updateView() {
 function winning(board, player) {
   // Check if there is a row, column, diagonal matches winning combination
   if (
-    (board[0] == player && board[1] == player && board[2] == player) ||
-    (board[3] == player && board[4] == player && board[5] == player) ||
-    (board[6] == player && board[7] == player && board[8] == player) ||
-    (board[0] == player && board[3] == player && board[6] == player) ||
-    (board[1] == player && board[4] == player && board[7] == player) ||
-    (board[2] == player && board[5] == player && board[8] == player) ||
-    (board[0] == player && board[4] == player && board[8] == player) ||
-    (board[2] == player && board[4] == player && board[6] == player)
+    (board[0] === player && board[1] === player && board[2] === player) ||
+    (board[3] === player && board[4] === player && board[5] === player) ||
+    (board[6] === player && board[7] === player && board[8] === player) ||
+    (board[0] === player && board[3] === player && board[6] === player) ||
+    (board[1] === player && board[4] === player && board[7] === player) ||
+    (board[2] === player && board[5] === player && board[8] === player) ||
+    (board[0] === player && board[4] === player && board[8] === player) ||
+    (board[2] === player && board[4] === player && board[6] === player)
   ) {
     return true;
   } else {
@@ -136,9 +136,8 @@ function aiMove() {
   }
 
   if (round === 0) {
-    // ai go first, randomly take a corner or the center
-    const cornerAndCenterIndexes = [0, 2, 4, 6, 8];
-    move(cornerAndCenterIndexes[getRandomInt(0, 4)]);
+    // ai go first, take a random cell
+    move(getRandomInt(0, 8));
   } else {
     const bestMoveIndex = minimax(board, ai).index;
     move(bestMoveIndex);
