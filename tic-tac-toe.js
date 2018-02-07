@@ -5,15 +5,15 @@
 var board = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 var turn = 'x'; // Player to move: x always first
 var ai; // ai is player x or y, default ai doesn't play
+var hu; // hu is player x or y, versus mode hu is undefined
 var round = 0; // Total moves so far, max 9;
 var ended = false;
 var winner;
 var turnNode;
 var cells;
 
-window.onload = init();
-
 // ------------- Board initiate -----------
+window.onload = init();
 function init() {
   cells = document.getElementsByClassName('cell');
   turnNode = document.getElementById('turn');
@@ -42,9 +42,14 @@ function reInit() {
   // af === ai first, hf === human first
   if (document.getElementById('cf').checked) {
     ai = 'x';
-    calculateMove();
+    hu = 'o';
+    aiMove();
   } else if (document.getElementById('hf').checked) {
     ai = 'o';
+    hu = 'x';
+  } else {
+    ai = undefined;
+    hu = undefined;
   }
 }
 
@@ -70,7 +75,7 @@ function move(index) {
 
   // Handle ai turn
   if (turn === ai) {
-    calculateMove();
+    aiMove();
   }
 }
 
@@ -125,20 +130,82 @@ function winning(board, player) {
 }
 
 // ----------- AI section -----------
-function calculateMove() {
+function aiMove() {
   if (ended) {
     return;
   }
 
-  const availSpots = emptyIndexes(board);
-  move(availSpots[0]);
+  if (round === 0) {
+    // ai go first, randomly take a corner or the center
+    const cornerAndCenterIndexes = [0, 2, 4, 6, 8];
+    move(cornerAndCenterIndexes[getRandomInt(0, 4)]);
+  } else {
+    const bestMoveIndex = minimax(board, ai).index;
+    move(bestMoveIndex);
+  }
 }
 
-function firstAiMove() {
-  // ai go first, always take the corner
-  move(0);
+function minimax(reboard, player) {
+  // Recursive function where the ai calculate moves in its virtaul game board
+  const availCells = emptyIndexes(reboard);
+
+  // ----- Recursive stop condition -----
+  // Return the score depend on whether ai won or lost in the virtual board
+  // If the game is draw, return 0
+  if (winning(reboard, ai)) {
+    return { score: 1 };
+  }
+  if (winning(reboard, hu)) {
+    return { score: -1 };
+  }
+  if (availCells.length === 0) {
+    return { score: 0 };
+  }
+
+  // ----- Recursive main code -----
+  // Try all the possible movesets, get the score of each moveset
+  let moves = [];
+  for (let i = 0; i < availCells.length; i++) {
+    let move = {};
+    const cell = availCells[i];
+    move.index = cell;
+    const newboard = reboard.slice();
+    newboard[cell] = player;
+    move.score = minimax(newboard, player === ai ? hu : ai).score;
+
+    moves.push(move);
+  }
+
+  // Find the best move
+  let bestMove;
+  if (player === ai) {
+    // If the move is made by ai, return max score
+    let bestScore = -100;
+    for (let i = 0; i < moves.length; i++) {
+      if (moves[i].score > bestScore) {
+        bestScore = moves[i].score;
+        bestMove = i;
+      }
+    }
+  } else {
+    // If the move is made by human, return min score
+    let bestScore = 100;
+    for (let i = 0; i < moves.length; i++) {
+      if (moves[i].score < bestScore) {
+        bestScore = moves[i].score;
+        bestMove = i;
+      }
+    }
+  }
+
+  // The final result
+  return moves[bestMove];
 }
 
 function emptyIndexes(reboard) {
   return reboard.filter(s => !isNaN(s));
+}
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
