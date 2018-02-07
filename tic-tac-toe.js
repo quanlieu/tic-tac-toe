@@ -1,15 +1,19 @@
+// ------------- Global variable -----------
 // The board appear to user as a matrix, but inside the code only a simple array
-// Trade-off: 2-dimensional array check row easier, simple array check column easier
 // 0 === empty cell, x === player x, o === player o
-var board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-var turn = 'x'; // Player to place: x always first
-var computer; // Computer is player x or y, default computer doesn't play
-var totalMove = 0; // Total moves have been place so far, max 9;
+// isNaN(board[i]) === true means that i is occupied
+var board = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+var turn = 'x'; // Player to move: x always first
+var ai; // ai is player x or y, default ai doesn't play
+var round = 0; // Total moves so far, max 9;
 var ended = false;
 var winner;
 var turnNode;
 var cells;
 
+window.onload = init();
+
+// ------------- Board initiate -----------
 function init() {
   cells = document.getElementsByClassName('cell');
   turnNode = document.getElementById('turn');
@@ -22,9 +26,9 @@ function init() {
 
 function reInit() {
   // Re initiate value
-  board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+  board = [0, 1, 2, 3, 4, 5, 6, 7, 8];
   turn = 'x';
-  totalMove = 0;
+  round = 0;
   ended = false;
   winner = undefined;
   turnNode.className = '';
@@ -34,59 +38,48 @@ function reInit() {
     cells[i].className = 'cell';
   }
 
-  // Check if play mode is set to computer
-  // cf === computer first, hf === human first
+  // Check if play mode is set to ai
+  // af === ai first, hf === human first
   if (document.getElementById('cf').checked) {
-    computer = 'x';
+    ai = 'x';
     calculateMove();
   } else if (document.getElementById('hf').checked) {
-    computer = 'o';
+    ai = 'o';
   }
 }
+
+// ----------- Board move handler -----------
 
 function handleCellClick(e) {
   // Do nothing if the game has ended or played on an occupied cell
-  const index = e.currentTarget.dataset.index
-  if (ended || board[index]) {
+  const index = e.currentTarget.dataset.index;
+  if (ended || isNaN(board[index])) {
     return;
   }
-  place(index);
+  move(index);
 }
 
-function place(index) {
+function move(index) {
   board[index] = turn;
-  totalMove++;
+  round++;
   updateGameStatus();
   if (!ended) {
     turn = turn === 'x' ? 'o' : 'x';
   }
   updateView();
 
-  // Handle computer turn
-  if (turn === computer) {
+  // Handle ai turn
+  if (turn === ai) {
     calculateMove();
   }
 }
 
 function updateGameStatus() {
   // Update ended and winner here
-  // Check if there is a row, column, diagonal match winning condition
-  const rowWin =
-    shallowEqual([board[0], board[1], board[2]], turn) ||
-    shallowEqual([board[3], board[4], board[5]], turn) ||
-    shallowEqual([board[6], board[7], board[8]], turn);
-  const colWin =
-    shallowEqual([board[0], board[3], board[6]], turn) ||
-    shallowEqual([board[1], board[4], board[7]], turn) ||
-    shallowEqual([board[2], board[5], board[8]], turn);
-  const diaWin =
-    shallowEqual([board[0], board[4], board[8]], turn) ||
-    shallowEqual([board[2], board[4], board[6]], turn);
-
-  if (rowWin || colWin || diaWin) {
+  if (winning(board, turn)) {
     ended = true;
     winner = turn;
-  } else if (totalMove === 9) {
+  } else if (round === 9) {
     ended = true;
     winner = 'draw';
   }
@@ -94,7 +87,9 @@ function updateGameStatus() {
 
 function updateView() {
   for (let i = 0; i < 9; i++) {
-    cells[i].className = 'cell ' + board[i];
+    if (isNaN(board[i])) {
+      cells[i].className = 'cell ' + board[i];
+    }
   }
   if (winner === 'x') {
     turnNode.className = 'ended';
@@ -110,32 +105,40 @@ function updateView() {
   }
 }
 
-function shallowEqual(array, value) {
-  for (let i = 0; i < array.length; i++) {
-    if (array[i] !== value) {
-      return false;
-    }
+// ------------- Winning checker -----------
+function winning(board, player) {
+  // Check if there is a row, column, diagonal matches winning combination
+  if (
+    (board[0] == player && board[1] == player && board[2] == player) ||
+    (board[3] == player && board[4] == player && board[5] == player) ||
+    (board[6] == player && board[7] == player && board[8] == player) ||
+    (board[0] == player && board[3] == player && board[6] == player) ||
+    (board[1] == player && board[4] == player && board[7] == player) ||
+    (board[2] == player && board[5] == player && board[8] == player) ||
+    (board[0] == player && board[4] == player && board[8] == player) ||
+    (board[2] == player && board[4] == player && board[6] == player)
+  ) {
+    return true;
+  } else {
+    return false;
   }
-  return true;
 }
 
-window.onload = init();
-
-// AI section
+// ----------- AI section -----------
 function calculateMove() {
   if (ended) {
     return;
   }
-  
-  for (let i = 0; i < 9; i++) {
-    if (!board[i]) {
-      place(i);
-      return;
-    }
-  }
+
+  const availSpots = emptyIndexes(board);
+  move(availSpots[0]);
 }
 
-function firstComputerMove() {
-  // Computer go first, always take the corner
-  place(0);
+function firstAiMove() {
+  // ai go first, always take the corner
+  move(0);
+}
+
+function emptyIndexes(reboard) {
+  return reboard.filter(s => !isNaN(s));
 }
