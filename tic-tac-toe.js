@@ -11,6 +11,7 @@ var ended = false;
 var winner;
 var turnNode;
 var cells;
+const MAX_DEPTH = 12 // The board is 3x3 = 9, 12 level deep is a safe number
 
 // ------------- Board initiate -----------
 window.onload = init();
@@ -139,46 +140,52 @@ function aiMove() {
     // ai go first, take a random cell
     move(getRandomInt(0, 8));
   } else {
-    const bestMoveIndex = minimax(board, ai).index;
-    move(bestMoveIndex);
+    const bestMove = minimax(board, ai, 0);
+    move(bestMove.index);
   }
 }
 
-function minimax(prevBoard, player) {
-  // Recursive function where the ai calculate moves in its virtaul game board
-  const emptyCells = emptyIndexes(prevBoard);
+function scoring(newBoard, depth) {
+  if (winning(newBoard, ai)) {
+    // Win, the earlier the more score
+    return MAX_DEPTH - depth;
+  }
+  if (winning(newBoard, hu)) {
+    // Lose, the later the more score. But can never be more than win or draw
+    return depth - MAX_DEPTH;
+  }
+  if (emptyIndexes(newBoard).length === 0) {
+    // Draw, 1 instead of zero for easier check
+    return 1;
+  }
+  // Terminal state is not reach, return 0
+  return 0;
+}
 
-  // ----- Recursive -----
-  // Try all the possible movesets, get the score of each moveset
+function minimax(prevBoard, player, depth) {
+  // Recursive function where the ai calculate moves in its virtual game board
+  const emptyCells = emptyIndexes(prevBoard);
+  depth++;
+  // ----- Try all possible move -----
   let moves = [];
   for (let i = 0; i < emptyCells.length; i++) {
-    // Avoid board mutation
-    const newboard = prevBoard.slice();
+    // Avoid board mutation help coding easier
+    const newBoard = prevBoard.slice();
     const cell = emptyCells[i];
     let move = { index: cell };
-    // Make brute-force move
-    newboard[cell] = player;
+    newBoard[cell] = player;
     let stop = false;
 
-    // Stop recursive and assign score base on whether ai won or lost in the virtual board
-    // If neither win and the board is full, the game is draw, score 0
-    if (winning(newboard, ai)) {
-      move.score = 1;
+    const score = scoring(newBoard, depth);
+    if (score) {
       stop = true;
-    }
-    if (winning(newboard, hu)) {
-      move.score = -1;
-      stop = true;
-    }
-    if (emptyCells.length === 1) {
-      // prevBoard's emptyCells == 1 => newBoard's emptyCells == 0 => board full
-      move.score = 0;
-      stop = true;
+      move.score = score;
     }
 
-    // Recursive through all possible movesets
+    // ----- Recursive ----
     if (!stop) {
-      move.score = minimax(newboard, player === ai ? hu : ai).score;
+      const nextPlayer = player === ai ? hu : ai;
+      move.score = minimax(newBoard, nextPlayer, depth).score;
     }
     moves.push(move);
   }
@@ -187,7 +194,7 @@ function minimax(prevBoard, player) {
   let bestMove;
   if (player === ai) {
     // If the move is made by ai, return max score
-    let bestScore = -100;
+    let bestScore = -Infinity;
     for (let i = 0; i < moves.length; i++) {
       if (moves[i].score > bestScore) {
         bestScore = moves[i].score;
@@ -196,7 +203,7 @@ function minimax(prevBoard, player) {
     }
   } else {
     // If the move is made by human, return min score
-    let bestScore = 100;
+    let bestScore = Infinity;
     for (let i = 0; i < moves.length; i++) {
       if (moves[i].score < bestScore) {
         bestScore = moves[i].score;
