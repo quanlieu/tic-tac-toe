@@ -78,7 +78,7 @@ function move(index) {
 
   // Handle ai turn
   if (turn === ai) {
-    setTimeout(aiMove, 500);
+    setTimeout(aiMove, 500); // Make sure UI update before recursive
   }
 }
 
