@@ -24,7 +24,6 @@
 #thinking {
   text-align: center;
   font-family: Arial, Helvetica, sans-serif;
-  margin: 0.2em;
 }
 
 #turn {
@@ -46,13 +45,13 @@
 .board {
   width: 180px;
   border: 2px solid gray;
-  margin: auto;
+  margin: 1em auto;
 }
 
 .board-4{
   width: 240px;
   border: 2px solid gray;
-  margin: auto;
+  margin: 1em auto;
 }
 
 .row {
