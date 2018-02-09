@@ -39,6 +39,9 @@ function init() {
 }
 
 function reInit() {
+  if (timerTick) {
+    return;
+  }
   // Re initiate value
   board = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
   turn = 'x';
@@ -72,7 +75,9 @@ function reInit() {
 function handleCellClick(e) {
   // Do nothing if the game has ended or played on an occupied cell
   const index = e.currentTarget.dataset.index;
-  if (ended || isNaN(board[index])) {
+  console.log(Boolean(timerTick))
+  if (ended || isNaN(board[index]) || timerTick) {
+    console.log('return')
     return;
   }
   move(index);
@@ -124,10 +129,10 @@ function updateView() {
   }
 
   if (turn === ai) {
-    timerTick = 0;
     thinking.innerText = 'Thinking: ' + timerTick + 's';
     timer = setInterval(thinkingTimer, 1000);
   } else if (timer) {
+    timerTick = 0;
     clearInterval(timer);
   }
 }
