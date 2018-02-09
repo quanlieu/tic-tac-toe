@@ -144,34 +144,42 @@ function aiMove() {
   }
 }
 
-function minimax(reboard, player) {
+function minimax(prevBoard, player) {
   // Recursive function where the ai calculate moves in its virtaul game board
-  const availCells = emptyIndexes(reboard);
+  const emptyCells = emptyIndexes(prevBoard);
 
-  // ----- Recursive stop condition -----
-  // Return the score depend on whether ai won or lost in the virtual board
-  // If the game is draw, return 0
-  if (winning(reboard, ai)) {
-    return { score: 1 };
-  }
-  if (winning(reboard, hu)) {
-    return { score: -1 };
-  }
-  if (availCells.length === 0) {
-    return { score: 0 };
-  }
-
-  // ----- Recursive main code -----
+  // ----- Recursive -----
   // Try all the possible movesets, get the score of each moveset
   let moves = [];
-  for (let i = 0; i < availCells.length; i++) {
-    let move = {};
-    const cell = availCells[i];
-    move.index = cell;
-    const newboard = reboard.slice();
+  for (let i = 0; i < emptyCells.length; i++) {
+    // Avoid board mutation
+    const newboard = prevBoard.slice();
+    const cell = emptyCells[i];
+    let move = { index: cell };
+    // Make brute-force move
     newboard[cell] = player;
-    move.score = minimax(newboard, player === ai ? hu : ai).score;
+    let stop = false;
 
+    // Stop recursive and assign score base on whether ai won or lost in the virtual board
+    // If neither win and the board is full, the game is draw, score 0
+    if (winning(newboard, ai)) {
+      move.score = 1;
+      stop = true;
+    }
+    if (winning(newboard, hu)) {
+      move.score = -1;
+      stop = true;
+    }
+    if (emptyCells.length === 1) {
+      // prevBoard's emptyCells == 1 => newBoard's emptyCells == 0 => board full
+      move.score = 0;
+      stop = true;
+    }
+
+    // Recursive through all possible movesets
+    if (!stop) {
+      move.score = minimax(newboard, player === ai ? hu : ai).score;
+    }
     moves.push(move);
   }
 
@@ -201,8 +209,8 @@ function minimax(reboard, player) {
   return moves[bestMove];
 }
 
-function emptyIndexes(reboard) {
-  return reboard.filter(s => !isNaN(s));
+function emptyIndexes(currentBoard) {
+  return currentBoard.filter(s => !isNaN(s));
 }
 
 function getRandomInt(min, max) {
