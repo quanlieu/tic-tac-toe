@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Tic-tac-toe</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="title-wrapper">
+    <div class="title">Tic tac toe</div>
+    <div class="desc">Select a game mode and hit "Start"</div>
+    <input type="radio" name="mode" value="vs" id="vs" checked>
+    <label for="vs">Human vs Human</label>
+    <input type="radio" name="mode" value="human-first" id="hf">
+    <label for="hf">Human vs AI</label>
+    <input type="radio" name="mode" value="ai-first" id="cf">
+    <label for="cf">AI vs Human</label>
+    <button id="ok">Start</button>
+  </div>
+  <div id="thinking">&nbsp</div>
+  <div class="board-4">
+    <div class="row">
+      <div class="cell" data-index="0">
+      </div><div class="cell" data-index="1">
+      </div><div class="cell" data-index="2">
+      </div><div class="cell" data-index="3">
+      </div>
+    </div>
+    <div class="row">
+      <div class="cell" data-index="4">
+      </div><div class="cell" data-index="5">
+      </div><div class="cell" data-index="6">
+      </div><div class="cell" data-index="7">
+      </div>
+    </div>
+    <div class="row">
+      <div class="cell" data-index="8">
+      </div><div class="cell" data-index="9">
+      </div><div class="cell" data-index="10">
+      </div><div class="cell" data-index="11">
+      </div>
+    </div>
+    <div class="row">
+      <div class="cell" data-index="12">
+      </div><div class="cell" data-index="13">
+      </div><div class="cell" data-index="14">
+      </div><div class="cell" data-index="15">
+      </div>
+    </div>
+  </div>
+  <div id="turn">X turn</div>
+  <div>Note:</div>
+  <ul>
+    <li>Due to the factorial complexity, I apply alpha-beta pruning with minimax.</li>
+    <li>Even with pruning, the most expensive move take my Macbook Air about 40 seconds to calculate.</li>
+  </ul>
+  <script src="tic-tac-toe-4-ww.js"></script>
+</body>
+</html>
