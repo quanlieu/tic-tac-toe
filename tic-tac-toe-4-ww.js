@@ -75,9 +75,7 @@ function reInit() {
 function handleCellClick(e) {
   // Do nothing if the game has ended or played on an occupied cell
   const index = e.currentTarget.dataset.index;
-  console.log(Boolean(timerTick))
   if (ended || isNaN(board[index]) || timerTick) {
-    console.log('return')
     return;
   }
   move(index);
